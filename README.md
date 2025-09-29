@@ -36,9 +36,7 @@ npm run build
 
 ## 📦 Components Overview
 
-### 🔤 InputField Component
-
-A flexible and feature-rich input component with multiple variants, states, and built-in validation.
+https://github.com/user-attachments/assets/fc28833a-f26a-4114-9d2d-54f2537d2a2d
 
 #### Features
 - ✅ **Multiple Variants**: `filled`, `outlined`, `ghost`
