@@ -192,7 +192,7 @@ describe('DataTable', () => {
         key: 'status',
         title: 'Status',
         dataIndex: 'name',
-        render: (value: string) => <span data-testid="custom-cell">Active: {value}</span>,
+        render: (value: unknown) => <span data-testid="custom-cell">Active: {value as string}</span>,
       },
     ];
     

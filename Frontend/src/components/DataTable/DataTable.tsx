@@ -7,7 +7,7 @@ export interface Column<T> {
   title: string;
   dataIndex: keyof T;
   sortable?: boolean;
-  render?: (value: any, record: T, index: number) => React.ReactNode;
+  render?: (value: unknown, record: T, index: number) => React.ReactNode;
   width?: string | number;
   align?: 'left' | 'center' | 'right';
 }
@@ -212,11 +212,11 @@ function DataTable<T extends Record<string, any>>({
   return (
     <div className={cn('border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden', className)}>
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full" role="table" aria-label="Data table with sortable columns">
           <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <tr>
               {selectable && (
-                <th className={cn(currentSize.header, 'w-12')}>
+                <th className={cn(currentSize.header, 'w-12 text-center')}>
                   <input
                     type="checkbox"
                     checked={selectedRows.size === sortedData.length && sortedData.length > 0}
@@ -232,13 +232,26 @@ function DataTable<T extends Record<string, any>>({
                   key={column.key}
                   className={cn(
                     currentSize.header,
-                    'text-left text-gray-900 dark:text-gray-100',
-                    column.align === 'center' && 'text-center',
+                    'text-center text-gray-900 dark:text-gray-100',
+                    column.align === 'left' && 'text-left',
                     column.align === 'right' && 'text-right',
                     column.sortable && 'cursor-pointer select-none group hover:bg-gray-100 dark:hover:bg-gray-700',
                   )}
                   style={{ width: column.width }}
                   onClick={() => column.sortable && handleSort(column.key)}
+                  {...(column.sortable && {
+                    role: 'button',
+                    tabIndex: 0,
+                    'aria-sort': sortState.key === column.key 
+                      ? (sortState.direction === 'asc' ? 'ascending' : 'descending') 
+                      : 'none',
+                    onKeyDown: (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSort(column.key);
+                      }
+                    }
+                  })}
                 >
                   <div className="flex items-center gap-2">
                     <span>{column.title}</span>
@@ -265,7 +278,7 @@ function DataTable<T extends Record<string, any>>({
                   onClick={(e) => handleRowClick(record, index, e)}
                 >
                   {selectable && (
-                    <td className={cn(currentSize.cell, 'w-12')}>
+                    <td className={cn(currentSize.cell, 'w-12 text-center')}>
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -281,8 +294,8 @@ function DataTable<T extends Record<string, any>>({
                       key={column.key}
                       className={cn(
                         currentSize.cell,
-                        'text-gray-900 dark:text-gray-100',
-                        column.align === 'center' && 'text-center',
+                        'text-center text-gray-900 dark:text-gray-100',
+                        column.align === 'left' && 'text-left',
                         column.align === 'right' && 'text-right',
                       )}
                     >

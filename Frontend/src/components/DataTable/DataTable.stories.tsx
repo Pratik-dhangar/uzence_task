@@ -131,7 +131,8 @@ const userColumns: Column<User>[] = [
     title: 'Status',
     dataIndex: 'status',
     sortable: true,
-    render: (value: User['status']) => {
+    render: (value: unknown) => {
+      const status = value as User['status'];
       const statusColors = {
         active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
         inactive: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
@@ -139,8 +140,8 @@ const userColumns: Column<User>[] = [
       };
       
       return (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[value]}`}>
-          {value.charAt(0).toUpperCase() + value.slice(1)}
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[status]}`}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
       );
     },
@@ -179,7 +180,7 @@ const productColumns: Column<Product>[] = [
     dataIndex: 'price',
     sortable: true,
     align: 'right',
-    render: (value: number) => `$${value.toFixed(2)}`,
+    render: (value: unknown) => `$${(value as number).toFixed(2)}`,
   },
   {
     key: 'stock',
@@ -187,9 +188,10 @@ const productColumns: Column<Product>[] = [
     dataIndex: 'stock',
     sortable: true,
     align: 'center',
-    render: (value: number) => {
-      const stockColor = value < 20 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400';
-      return <span className={stockColor}>{value}</span>;
+    render: (value: unknown) => {
+      const stock = value as number;
+      const stockColor = stock < 20 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400';
+      return <span className={stockColor}>{stock}</span>;
     },
   },
   {
@@ -198,12 +200,13 @@ const productColumns: Column<Product>[] = [
     dataIndex: 'rating',
     sortable: true,
     align: 'center',
-    render: (value: number) => {
-      const stars = '★'.repeat(Math.floor(value)) + '☆'.repeat(5 - Math.floor(value));
+    render: (value: unknown) => {
+      const rating = value as number;
+      const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
       return (
         <div className="flex items-center justify-center gap-1">
           <span className="text-yellow-400">{stars}</span>
-          <span className="text-sm text-gray-500">({value})</span>
+          <span className="text-sm text-gray-500">({rating})</span>
         </div>
       );
     },

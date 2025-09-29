@@ -89,12 +89,21 @@ const sampleUsers: User[] = [
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('invalid@email');
   const [password, setPassword] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive' | 'pending'>('all');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Email validation function
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isEmailValid = isValidEmail(email);
+  const showEmailError = email.length > 0 && !isEmailValid;
 
   // Filter users based on search term and status
   const filteredUsers = sampleUsers.filter(user => {
@@ -112,23 +121,26 @@ function App() {
       title: 'Name',
       dataIndex: 'name',
       sortable: true,
-      render: (value: string, record: User) => (
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-            {value.split(' ').map(n => n[0]).join('')}
+      render: (value: unknown, record: User) => {
+        const name = value as string;
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+              {name.split(' ').map((n: string) => n[0]).join('')}
+            </div>
+            <div>
+              <div className="font-medium text-gray-900 dark:text-gray-100">{name}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">{record.role}</div>
+            </div>
           </div>
-          <div>
-            <div className="font-medium text-gray-900 dark:text-gray-100">{value}</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">{record.role}</div>
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       key: 'contact',
       title: 'Contact',
       dataIndex: 'email',
-      render: (_value: string, record: User) => (
+      render: (_value: unknown, record: User) => (
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-sm">
             <Mail className="w-4 h-4 text-gray-400" />
@@ -146,18 +158,22 @@ function App() {
       title: 'Department',
       dataIndex: 'department',
       sortable: true,
+      align: 'left',
     },
     {
       key: 'joinDate',
       title: 'Join Date',
       dataIndex: 'joinDate',
       sortable: true,
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-gray-400" />
-          <span>{new Date(value).toLocaleDateString()}</span>
-        </div>
-      ),
+      render: (value: unknown) => {
+        const dateString = value as string;
+        return (
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-gray-400" />
+            <span>{new Date(dateString).toLocaleDateString()}</span>
+          </div>
+        );
+      },
     },
     {
       key: 'rating',
@@ -165,19 +181,23 @@ function App() {
       dataIndex: 'rating',
       sortable: true,
       align: 'center',
-      render: (value: number) => (
-        <div className="flex items-center justify-center gap-1">
-          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-          <span className="font-medium">{value}</span>
-        </div>
-      ),
+      render: (value: unknown) => {
+        const rating = value as number;
+        return (
+          <div className="flex items-center justify-center gap-1">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span className="font-medium">{rating}</span>
+          </div>
+        );
+      },
     },
     {
       key: 'status',
       title: 'Status',
       dataIndex: 'status',
       sortable: true,
-      render: (value: User['status']) => {
+      render: (value: unknown) => {
+        const status = value as User['status'];
         const statusConfig = {
           active: { 
             bg: 'bg-green-100 dark:bg-green-900/30', 
@@ -196,11 +216,11 @@ function App() {
           },
         };
         
-        const config = statusConfig[value];
+        const config = statusConfig[status];
         return (
           <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
             <div className={`w-2 h-2 rounded-full ${config.dot}`}></div>
-            {value.charAt(0).toUpperCase() + value.slice(1)}
+            {status.charAt(0).toUpperCase() + status.slice(1)}
           </div>
         );
       },
@@ -266,7 +286,11 @@ function App() {
 
           {/* Mobile menu - only show on small screens when open */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div 
+              className="md:hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
+              role="region"
+              aria-label="Mobile navigation menu"
+            >
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Showcase of InputField and DataTable components
               </p>
@@ -275,10 +299,10 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8">
+      <main className="max-w-7xl mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8" role="main">
         {/* InputField Demo Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 md:mb-6">
+        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6" aria-labelledby="inputfield-heading">
+          <h2 id="inputfield-heading" className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 md:mb-6">
             InputField Component Demo
           </h2>
           
@@ -303,6 +327,8 @@ function App() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your.email@example.com"
                 variant="filled"
+                invalid={showEmailError}
+                errorMessage={showEmailError ? "Please enter a valid email address" : undefined}
               />
               
               <InputField
@@ -311,7 +337,6 @@ function App() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                showClearButton
                 variant="outlined"
               />
             </div>
@@ -324,14 +349,6 @@ function App() {
                 label="Loading State"
                 value="Processing..."
                 loading
-                variant="outlined"
-              />
-              
-              <InputField
-                label="Error State"
-                value="invalid-email"
-                invalid
-                errorMessage="Please enter a valid email address"
                 variant="outlined"
               />
               
@@ -372,10 +389,10 @@ function App() {
         </section>
 
         {/* DataTable Demo Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6" aria-labelledby="datatable-heading">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
+              <h2 id="datatable-heading" className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
                 DataTable Component Demo
               </h2>
               <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
@@ -385,10 +402,13 @@ function App() {
             
             <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-3">
               {/* Status Filter */}
+              <label htmlFor="status-filter" className="sr-only">Filter by status</label>
               <select
+                id="status-filter"
                 value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value as any)}
+                onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'inactive' | 'pending')}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm min-w-0 flex-1 xs:flex-none xs:min-w-[120px]"
+                aria-label="Filter users by status"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
