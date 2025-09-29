@@ -40,7 +40,7 @@ https://github.com/user-attachments/assets/fc28833a-f26a-4114-9d2d-54f2537d2a2d
 
 #### Features
 - ✅ **Multiple Variants**: `filled`, `outlined`, `ghost`
-- ✅ **Three Sizes**: `sm`, `md`, `lg`
+- ✅ **Responsive**: `sm`, `md`, `lg`
 - ✅ **Validation States**: error, loading, disabled
 - ✅ **Password Toggle**: Built-in show/hide functionality
 - ✅ **Clear Button**: Optional clear input functionality
