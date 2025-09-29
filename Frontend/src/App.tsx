@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import InputField from './components/InputField';
 import DataTable, { type Column } from './components/DataTable';
-import { Users, Mail, Phone, Calendar, Star } from 'lucide-react';
+import ThemeToggle from './components/ThemeToggle';
+import { Users, Mail, Phone, Calendar, Star, Menu, X } from 'lucide-react';
 
 // Sample data types
 interface User {
@@ -93,6 +94,7 @@ function App() {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive' | 'pending'>('all');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Filter users based on search term and status
   const filteredUsers = sampleUsers.filter(user => {
@@ -220,31 +222,67 @@ function App() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500 rounded-lg">
-              <Users className="w-6 h-6 text-white" />
+        <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
+          <div className="flex items-center justify-between">
+            {/* Left side - Logo and title */}
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500 rounded-lg">
+                <Users className="w-5 h-5 md:w-6 md:h-6 text-white" />
+              </div>
+              <div className="hidden xs:block">
+                <h1 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  React Components Demo
+                </h1>
+                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 hidden sm:block">
+                  Showcase of InputField and DataTable components
+                </p>
+              </div>
+              <div className="xs:hidden">
+                <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  Components Demo
+                </h1>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                React Components Demo
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+
+            {/* Right side - Mobile menu button and theme toggle */}
+            <div className="flex items-center gap-2">
+              {/* Theme Toggle - always visible */}
+              <ThemeToggle />
+              
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Toggle mobile menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile menu - only show on small screens when open */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Showcase of InputField and DataTable components
               </p>
             </div>
-          </div>
+          )}
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8">
         {/* InputField Demo Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 md:mb-6">
             InputField Component Demo
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Basic Inputs */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200">Basic Examples</h3>
@@ -334,23 +372,23 @@ function App() {
         </section>
 
         {/* DataTable Demo Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center justify-between mb-6">
+        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
                 DataTable Component Demo
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
                 Employee directory with sorting, filtering, and selection
               </p>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-3">
               {/* Status Filter */}
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as any)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm min-w-0 flex-1 xs:flex-none xs:min-w-[120px]"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -361,7 +399,7 @@ function App() {
               <button
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded-md text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded-md text-sm font-medium transition-colors whitespace-nowrap"
               >
                 {isLoading ? 'Refreshing...' : 'Refresh'}
               </button>
@@ -396,11 +434,11 @@ function App() {
           />
 
           {/* Stats */}
-          <div className="mt-4 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-sm text-gray-600 dark:text-gray-400">
             <div>
               Showing <strong>{filteredUsers.length}</strong> of <strong>{sampleUsers.length}</strong> users
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <span>Active: <strong>{sampleUsers.filter(u => u.status === 'active').length}</strong></span>
               <span>Pending: <strong>{sampleUsers.filter(u => u.status === 'pending').length}</strong></span>
               <span>Inactive: <strong>{sampleUsers.filter(u => u.status === 'inactive').length}</strong></span>
@@ -409,12 +447,12 @@ function App() {
         </section>
 
         {/* Features Overview */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Features Overview
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">
                 InputField Component
@@ -451,11 +489,11 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-8 md:mt-12">
+        <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
           <div className="text-center text-gray-600 dark:text-gray-400">
-            <p>Built with React, TypeScript, TailwindCSS, and Storybook</p>
-            <p className="text-sm mt-1">Components: InputField & DataTable</p>
+            <p className="text-sm md:text-base">Built with React, TypeScript, TailwindCSS, and Storybook</p>
+            <p className="text-xs md:text-sm mt-1">Components: InputField & DataTable</p>
           </div>
         </div>
       </footer>
